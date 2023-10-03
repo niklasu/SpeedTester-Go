@@ -1,7 +1,6 @@
 package main
 
 import (
-	"errors"
 	"io"
 	"log"
 	"net/http"
@@ -9,35 +8,28 @@ import (
 	"time"
 )
 
-type DevNullWriter struct {
-	receivedBytes int64
+type NoopWriter struct {
 }
 
-func (dnv *DevNullWriter) Write(p []byte) (n int, err error) {
-	dnv.receivedBytes += int64(len(p))
-	log.Printf("Got %d bytes\n", dnv.receivedBytes)
-	if dnv.receivedBytes > 10*1000*1000 {
-		return 0, errors.New("enough is enough")
-	}
+func (n2 *NoopWriter) Write(p []byte) (n int, err error) {
 	return len(p), nil
 }
 
 func main() {
-	log.Println("##### START ####")
 	url := os.Args[2]
-	log.Println(url)
+	log.Printf("-url %s\n", url)
 
 	start := time.Now()
-	// Get the data
-	resp, _ := http.Get(url)
-	defer resp.Body.Close()
 
-	// Writer the body to file
-	writer := &DevNullWriter{}
-	_, _ = io.Copy(writer, resp.Body)
+	download(url)
 
 	elapsed := time.Since(start)
-	log.Printf("Speed test took %s \n", elapsed)
-	log.Printf("%v MBit/s\n", 10*8/elapsed.Seconds())
+	log.Printf("%.2f MBit/s\n", 10*8/elapsed.Seconds())
 
+}
+
+func download(url string) {
+	resp, _ := http.Get(url)
+	defer resp.Body.Close()
+	_, _ = io.CopyN(&NoopWriter{}, resp.Body, 10*1000*1000)
 }
