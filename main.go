@@ -23,8 +23,7 @@ func main() {
 
 	download(url)
 
-	elapsed := time.Since(start)
-	log.Printf("%.2f MBit/s\n", 10*8/elapsed.Seconds())
+	log.Printf("%.2f MBit/s\n", 10*8/time.Since(start).Seconds())
 
 }
 
