@@ -8,7 +8,7 @@ import (
 func Download(url string) {
 	resp, _ := http.Get(url)
 	defer resp.Body.Close()
-	_, _ = io.CopyN(&noopWriter{}, resp.Body, 10*1000*1000)
+	_, _ = io.CopyN(&noopWriter{}, resp.Body, 50*1000*1000)
 }
 
 type noopWriter struct {

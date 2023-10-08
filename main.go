@@ -2,37 +2,57 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"speedtester/downloader"
+	"strconv"
+	"strings"
 	"time"
 )
 
 func main() {
-
-	url, err := getValue(os.Args, "url")
+	url, err := getValue(os.Args, "-url")
 	if err != nil {
-		fmt.Println(err.Error())
+		log.Println(err.Error())
+		return
+	}
+	log.Printf("-url is %s \n", url)
+	interval, err := getValue(os.Args, "-interval")
+	if err != nil {
+		log.Println(err.Error())
+		return
+	}
+	log.Printf("-interval is %s \n", interval)
+
+	intervalAsInt, err := strconv.ParseInt(interval, 10, 64)
+	if err != nil {
 		return
 	}
 
-	log.Printf("-url is %s \n", url)
+	measure(url)
 
-	start := time.Now()
-
-	downloader.Download(url)
-
-	log.Printf("%.2f MBit/s\n", 10*8/time.Since(start).Seconds())
+	for range time.Tick(time.Second * time.Duration(intervalAsInt)) {
+		measure(url)
+	}
 
 }
 
-func getValue(args []string, s string) (string, error) {
-	indexOfKey := indexOf(os.Args, "-url")
+func measure(url string) {
+	start := time.Now()
+	downloader.Download(url)
+	log.Printf("%.2f MBit/s\n", 10*8/time.Since(start).Seconds())
+}
+
+func getValue(args []string, key string) (string, error) {
+	indexOfKey := indexOf(os.Args, key)
 	if indexOfKey == len(args)-1 {
-		return "", errors.New("found key -" + s + " but missing a value")
+		return "", errors.New("found key -" + key + " but missing a value")
 	}
-	return os.Args[indexOfKey+1], nil
+	value := os.Args[indexOfKey+1]
+	if strings.HasPrefix(value, "-") {
+		return "", errors.New("the value for key " + key + " is " + value + " and not allowed because it starts with '-'")
+	}
+	return value, nil
 
 }
 

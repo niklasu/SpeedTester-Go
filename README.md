@@ -2,7 +2,8 @@
 SpeedTester in Go
 
 ## Feature Backlog
-- [ ] speedtests can run periodically
+- [x] speedtests can run periodically
+- [ ] amount of download bytes is configurable
 
 
 ## Lessons learned
