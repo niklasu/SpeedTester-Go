@@ -5,10 +5,10 @@ import (
 	"net/http"
 )
 
-func Download(url string) {
+func Download(url string, size int64) {
 	resp, _ := http.Get(url)
 	defer resp.Body.Close()
-	_, _ = io.CopyN(&noopWriter{}, resp.Body, 50*1000*1000)
+	_, _ = io.CopyN(&noopWriter{}, resp.Body, size)
 }
 
 type noopWriter struct {

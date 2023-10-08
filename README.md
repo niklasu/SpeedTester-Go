@@ -5,6 +5,7 @@ SpeedTester in Go
 |-------------|-------------------------------------------------------------------------------------------------------------|
 | `-url`      | download url of the target for the measurement e.g. `https://download.com/video.mp4`                        |
 | `-interval` | interval (in seconds) for periodic measurement. Use `0` to execute just a single (non-periodic) measurement |
+| `-size`     | amount of download bytes used for measurements.                                                             |
 
 
 ## Feature Backlog
