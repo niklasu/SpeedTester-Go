@@ -19,7 +19,7 @@ func main() {
 		log.Println(err.Error())
 		return
 	}
-	log.Printf("-interval is %s \n", interval)
+	log.Printf("-interval is %d \n", interval)
 
 	measure(url)
 	if interval == 0 {
