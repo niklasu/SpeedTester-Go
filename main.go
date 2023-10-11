@@ -2,38 +2,24 @@ package main
 
 import (
 	"log"
+	"os"
 	"speedtester/configuration"
 	"speedtester/downloader"
 	"time"
 )
 
 func main() {
-	url, err := configuration.GetUrl()
+	conf, err := configuration.LoadConfig(os.Args)
 	if err != nil {
 		log.Println(err.Error())
 		return
 	}
-	log.Printf("-url is %s \n", url)
-	interval, err := configuration.GetInterval()
-	if err != nil {
-		log.Println(err.Error())
+	measure(conf.Url, conf.SizeInBytes)
+	if conf.Interval == 0 {
 		return
 	}
-	log.Printf("-interval is %d \n", interval)
-
-	downloadSize, err := configuration.GetSizeInBytes()
-	if err != nil {
-		log.Println(err.Error())
-		return
-	}
-	log.Printf("-size is %d MB\n", downloadSize/(1000*1000))
-
-	measure(url, downloadSize)
-	if interval == 0 {
-		return
-	}
-	for range time.Tick(time.Second * time.Duration(interval)) {
-		measure(url, downloadSize)
+	for range time.Tick(time.Second * time.Duration(conf.Interval)) {
+		measure(conf.Url, conf.SizeInBytes)
 	}
 
 }

@@ -2,25 +2,59 @@ package configuration
 
 import (
 	"errors"
+	"log"
 	"os"
 	"strconv"
 	"strings"
 )
 
-func GetUrl() (string, error) {
-	return getValue(os.Args, "-url")
+type Config struct {
+	Url         string
+	Interval    int64
+	SizeInBytes int64
 }
 
-func GetInterval() (int64, error) {
-	intervalAsString, err := getValue(os.Args, "-interval")
+func LoadConfig(args []string) (Config, error) {
+	url, err := getUrl(args)
+	if err != nil {
+		log.Println(err.Error())
+		return Config{}, err
+	}
+	log.Printf("-url is %s \n", url)
+	interval, err := getInterval(args)
+	if err != nil {
+		log.Println(err.Error())
+		return Config{}, err
+	}
+	log.Printf("-interval is %d \n", interval)
+
+	downloadSize, err := getSizeInBytes(args)
+	if err != nil {
+		log.Println(err.Error())
+		return Config{}, err
+	}
+	log.Printf("-size is %d MB\n", downloadSize/(1000*1000))
+	return Config{
+		Url:         url,
+		Interval:    interval,
+		SizeInBytes: downloadSize,
+	}, nil
+}
+
+func getUrl(args []string) (string, error) {
+	return getValue(args, "-url")
+}
+
+func getInterval(args []string) (int64, error) {
+	intervalAsString, err := getValue(args, "-interval")
 	if err != nil {
 		return 0, err
 	}
 	return strconv.ParseInt(intervalAsString, 10, 64)
 }
 
-func GetSizeInBytes() (int64, error) {
-	intervalAsString, err := getValue(os.Args, "-size")
+func getSizeInBytes(args []string) (int64, error) {
+	intervalAsString, err := getValue(args, "-size")
 	if err != nil {
 		return 0, err
 	}
