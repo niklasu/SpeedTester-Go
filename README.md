@@ -17,6 +17,7 @@ higher prioritized than parameters.
 - [x] speedtests can run periodically
 - [x] amount of download bytes is configurable
 - [x] env-based config
+- [x] Dockerfile
 - [ ] url validation on startup
 
 
