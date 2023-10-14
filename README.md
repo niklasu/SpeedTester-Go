@@ -1,17 +1,23 @@
 # SpeedTester-Go
 SpeedTester in Go
 
-| Parameter   | Description                                                                                                 |
-|-------------|-------------------------------------------------------------------------------------------------------------|
-| `-url`      | download url of the target for the measurement e.g. `https://download.com/video.mp4`                        |
-| `-interval` | interval (in seconds) for periodic measurement. Use `0` to execute just a single (non-periodic) measurement |
-| `-size`     | amount of download bytes used for measurements.                                                             |
+Configuration
+
+| Parameter   | ENV      | Description                                                                                                 |
+|-------------|----------|-------------------------------------------------------------------------------------------------------------|
+| `-url`      | URL      | download url of the target for the measurement e.g. `https://download.com/video.mp4`                        |
+| `-interval` | INTERVAL | interval (in seconds) for periodic measurement. Use `0` to execute just a single (non-periodic) measurement |
+| `-size`     | SIZE     | amount of download bytes used for measurements.                                                             |
+
+Both command line parameters and environment variables are supported simultaneously. Env variables are individually
+higher prioritized than parameters.
 
 
 ## Feature Backlog
 - [x] speedtests can run periodically
 - [x] amount of download bytes is configurable
-- [ ] config validation
+- [x] env-based config
+- [ ] url validation on startup
 
 
 ## Lessons learned

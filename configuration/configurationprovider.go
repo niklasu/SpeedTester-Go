@@ -15,56 +15,55 @@ type Config struct {
 }
 
 func LoadConfig(args []string) (Config, error) {
-	url, err := getUrl(args)
-	if err != nil {
-		log.Println(err.Error())
-		return Config{}, err
+	url, found := os.LookupEnv("URL")
+	if !found {
+		urlFromParams, err := getUrl(args)
+		if err != nil {
+			log.Println(err.Error())
+			return Config{}, err
+		}
+		url = urlFromParams
 	}
-	log.Printf("-url is %s \n", url)
-	interval, err := getInterval(args)
-	if err != nil {
-		log.Println(err.Error())
-		return Config{}, err
-	}
-	log.Printf("-interval is %d \n", interval)
+	log.Printf("url is %s \n", url)
 
-	downloadSize, err := getSizeInBytes(args)
+	intervalAsString, found := os.LookupEnv("INTERVAL")
+	if !found {
+		intervalAsStringFromParams, err := getValue(args, "-interval")
+		if err != nil {
+			return Config{}, err
+		}
+		intervalAsString = intervalAsStringFromParams
+	}
+	interValAsInt, err := strconv.ParseInt(intervalAsString, 10, 64)
 	if err != nil {
-		log.Println(err.Error())
 		return Config{}, err
 	}
-	log.Printf("-size is %d MB\n", downloadSize/(1000*1000))
+	log.Printf("intervalAsStringFromEnv is %d \n", interValAsInt)
+
+	downloadSizeAsString, found := os.LookupEnv("SIZE")
+	if !found {
+		downloadSizeAsStringFromParams, err := getValue(args, "-size")
+		if err != nil {
+			return Config{}, err
+		}
+		downloadSizeAsString = downloadSizeAsStringFromParams
+	}
+	downloadSizeAsIntInMb, err := strconv.ParseInt(downloadSizeAsString, 10, 64)
+	if err != nil {
+		return Config{}, err
+	}
+	log.Printf("size is %d \n", downloadSizeAsIntInMb)
+
 	return Config{
 		Url:         url,
-		Interval:    interval,
-		SizeInBytes: downloadSize,
+		Interval:    interValAsInt,
+		SizeInBytes: downloadSizeAsIntInMb * 1000 * 1000,
 	}, nil
 }
 
 func getUrl(args []string) (string, error) {
 	return getValue(args, "-url")
 }
-
-func getInterval(args []string) (int64, error) {
-	intervalAsString, err := getValue(args, "-interval")
-	if err != nil {
-		return 0, err
-	}
-	return strconv.ParseInt(intervalAsString, 10, 64)
-}
-
-func getSizeInBytes(args []string) (int64, error) {
-	intervalAsString, err := getValue(args, "-size")
-	if err != nil {
-		return 0, err
-	}
-	sizeInMb, err := strconv.ParseInt(intervalAsString, 10, 64)
-	if err != nil {
-		return sizeInMb, err
-	}
-	return sizeInMb * 1000 * 1000, err
-}
-
 func getValue(args []string, key string) (string, error) {
 	indexOfKey := indexOf(os.Args, key)
 	if indexOfKey == -1 {
