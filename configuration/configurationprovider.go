@@ -17,7 +17,7 @@ type Config struct {
 func LoadConfig(args []string) (Config, error) {
 	url, found := os.LookupEnv("URL")
 	if !found {
-		urlFromParams, err := getUrl(args)
+		urlFromParams, err := getValue(args, "-url")
 		if err != nil {
 			log.Println(err.Error())
 			return Config{}, err
@@ -61,9 +61,6 @@ func LoadConfig(args []string) (Config, error) {
 	}, nil
 }
 
-func getUrl(args []string) (string, error) {
-	return getValue(args, "-url")
-}
 func getValue(args []string, key string) (string, error) {
 	indexOfKey := indexOf(os.Args, key)
 	if indexOfKey == -1 {
